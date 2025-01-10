@@ -1,15 +1,16 @@
-import { GenerativeModel, GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenerativeAI, GenerativeModel } from '@google/generative-ai';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { TextDTO } from '../dto/text.dto';
-import { SAFETY_SETTINGS } from 'src/config/constants/safety-settings';
 import { DEFAULT_MODEL } from 'src/config/constants/model';
+import { SAFETY_SETTINGS } from 'src/config/constants/safety-settings';
 import { SYSTEM_INSTRUCTION } from 'src/config/constants/system-instruction';
 
 const MODEL = DEFAULT_MODEL;
 
+export type ExtenstionImage = 'jpeg' | 'png' | 'jpg';
+
 @Injectable()
-export class TextService {
+export class ImageService {
   protected genAI: GoogleGenerativeAI;
   protected model: GenerativeModel;
 
@@ -24,31 +25,21 @@ export class TextService {
       systemInstruction: SYSTEM_INSTRUCTION,
     });
   }
-
-  async createText({ prompt }: TextDTO) {
-    const result = await this.model.generateContent({
-      contents: [
-        {
-          role: 'user',
-          parts: [
-            {
-              text: prompt,
-            },
-          ],
+  async process(buffer: Buffer, extension: ExtenstionImage, prompt: string) {
+    const result = await this.model.generateContent([
+      {
+        inlineData: {
+          data: Buffer.from(buffer).toString('base64'),
+          mimeType: `image/${extension}`,
         },
-      ],
-      generationConfig: {
-        temperature: 0.8,
-        maxOutputTokens: 1000,
       },
-    });
+      prompt,
+    ]);
 
     if (!result.response) {
-      return new BadRequestException('Failed to generate content');
+      throw new BadRequestException('Failed to generate image caption');
     }
 
-    const responseGemini = result.response.text();
-
-    return responseGemini;
+    return result.response.text();
   }
 }

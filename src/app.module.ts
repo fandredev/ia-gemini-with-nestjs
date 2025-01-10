@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TextModule } from './text/text.module';
-import { ChatModule } from './chat/services/chat.module';
+import { ImageModule } from './image/image.module';
 import * as Joi from 'joi';
 
 @Module({
@@ -17,7 +17,7 @@ import * as Joi from 'joi';
       },
     }),
     TextModule,
-    ChatModule,
+    ImageModule,
   ],
 })
 export class AppModule {}
