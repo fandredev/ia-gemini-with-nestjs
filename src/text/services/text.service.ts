@@ -7,7 +7,7 @@ import {
 } from '@google/generative-ai';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { TextDTO } from './dto/text.dto';
+import { TextDTO } from '../dto/text.dto';
 
 const MODEL = 'gemini-2.0-flash-exp';
 
